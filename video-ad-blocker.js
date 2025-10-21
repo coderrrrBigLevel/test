@@ -203,6 +203,15 @@ twitch-videoad.js text/javascript
                     const adType = isMidroll ? 'midroll' : 'preroll';
                     const message = `🛡️ Blocking ${adType} advertisement`;
                     
+                    // Add enhanced styling to text
+                    adDiv.textElement.style.cssText = `
+                        font-weight: 700;
+                        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                        letter-spacing: 0.5px;
+                        display: flex;
+                        align-items: center;
+                    `;
+                    
                     adDiv.textElement.textContent = message;
                     adDiv.style.display = 'block';
                     adDiv.classList.remove('hide');
@@ -286,29 +295,36 @@ twitch-videoad.js text/javascript
                         position: absolute;
                         top: 20px;
                         right: 20px;
-                        background: linear-gradient(135deg, #9146ff 0%, #00d4aa 100%);
+                        background: linear-gradient(135deg, #9146ff 0%, #00d4aa 50%, #ff6b6b 100%);
                         color: white;
-                        padding: 16px 24px;
-                        border-radius: 12px;
-                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                        backdrop-filter: blur(10px);
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                        font-weight: 600;
-                        font-size: 14px;
-                        line-height: 1.4;
-                        max-width: 300px;
-                        transform: translateX(100%);
-                        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                        animation: slideInRight 0.5s ease-out forwards;
+                        padding: 20px 28px;
+                        border-radius: 16px;
+                        box-shadow: 
+                            0 20px 40px rgba(145, 70, 255, 0.3),
+                            0 8px 16px rgba(0, 0, 0, 0.2),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                        backdrop-filter: blur(20px);
+                        border: 2px solid rgba(255, 255, 255, 0.3);
+                        font-weight: 700;
+                        font-size: 15px;
+                        line-height: 1.5;
+                        max-width: 320px;
+                        transform: translateX(100%) scale(0.9);
+                        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                        animation: slideInRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                        position: relative;
+                        overflow: hidden;
                     `;
                     
                     const icon = document.createElement('div');
                     icon.innerHTML = '🛡️';
                     icon.style.cssText = `
                         display: inline-block;
-                        margin-right: 8px;
-                        font-size: 16px;
-                        animation: pulse 2s infinite;
+                        margin-right: 12px;
+                        font-size: 20px;
+                        animation: pulse 2s infinite, rotate 3s linear infinite;
+                        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+                        transform-origin: center;
                     `;
                     
                     const text = document.createElement('span');
@@ -320,26 +336,74 @@ twitch-videoad.js text/javascript
                         position: absolute;
                         bottom: 0;
                         left: 0;
-                        height: 3px;
-                        background: rgba(255, 255, 255, 0.3);
-                        border-radius: 0 0 12px 12px;
+                        height: 4px;
+                        background: rgba(255, 255, 255, 0.2);
+                        border-radius: 0 0 16px 16px;
                         overflow: hidden;
+                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
                     `;
                     
                     const progressFill = document.createElement('div');
                     progressFill.className = 'ad-progress-fill';
                     progressFill.style.cssText = `
                         height: 100%;
-                        background: linear-gradient(90deg, #00d4aa, #9146ff);
+                        background: linear-gradient(90deg, #00d4aa 0%, #9146ff 50%, #ff6b6b 100%);
                         width: 0%;
-                        transition: width 0.3s ease;
-                        border-radius: 0 0 12px 12px;
+                        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                        border-radius: 0 0 16px 16px;
+                        position: relative;
+                        overflow: hidden;
                     `;
+                    
+                    // Add shimmer effect to progress bar
+                    const shimmer = document.createElement('div');
+                    shimmer.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                        animation: shimmer 2s infinite;
+                    `;
+                    progressFill.appendChild(shimmer);
                     
                     progressBar.appendChild(progressFill);
                     notification.appendChild(icon);
                     notification.appendChild(text);
                     notification.appendChild(progressBar);
+                    
+                    // Add particle effect background
+                    const particles = document.createElement('div');
+                    particles.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        pointer-events: none;
+                        overflow: hidden;
+                        border-radius: 16px;
+                    `;
+                    
+                    // Create floating particles
+                    for (let i = 0; i < 6; i++) {
+                        const particle = document.createElement('div');
+                        particle.style.cssText = `
+                            position: absolute;
+                            width: 4px;
+                            height: 4px;
+                            background: rgba(255, 255, 255, 0.6);
+                            border-radius: 50%;
+                            animation: float ${2 + Math.random() * 2}s ease-in-out infinite;
+                            animation-delay: ${Math.random() * 2}s;
+                            left: ${Math.random() * 100}%;
+                            top: ${Math.random() * 100}%;
+                        `;
+                        particles.appendChild(particle);
+                    }
+                    
+                    notification.appendChild(particles);
                     overlay.appendChild(notification);
                     
                     // Add CSS animations
@@ -348,26 +412,85 @@ twitch-videoad.js text/javascript
                         style.id = 'enhanced-ad-blocker-styles';
                         style.textContent = `
                             @keyframes slideInRight {
-                                from { transform: translateX(100%); opacity: 0; }
-                                to { transform: translateX(0); opacity: 1; }
+                                from { 
+                                    transform: translateX(100%) scale(0.9); 
+                                    opacity: 0; 
+                                }
+                                to { 
+                                    transform: translateX(0) scale(1); 
+                                    opacity: 1; 
+                                }
                             }
                             @keyframes slideOutRight {
-                                from { transform: translateX(0); opacity: 1; }
-                                to { transform: translateX(100%); opacity: 0; }
+                                from { 
+                                    transform: translateX(0) scale(1); 
+                                    opacity: 1; 
+                                }
+                                to { 
+                                    transform: translateX(100%) scale(0.9); 
+                                    opacity: 0; 
+                                }
                             }
                             @keyframes pulse {
-                                0%, 100% { transform: scale(1); }
-                                50% { transform: scale(1.1); }
+                                0%, 100% { 
+                                    transform: scale(1); 
+                                    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+                                }
+                                50% { 
+                                    transform: scale(1.15); 
+                                    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+                                }
+                            }
+                            @keyframes rotate {
+                                from { transform: rotate(0deg); }
+                                to { transform: rotate(360deg); }
+                            }
+                            @keyframes shimmer {
+                                0% { left: -100%; }
+                                100% { left: 100%; }
                             }
                             @keyframes fadeIn {
-                                from { opacity: 0; transform: translateY(-10px); }
-                                to { opacity: 1; transform: translateY(0); }
+                                from { 
+                                    opacity: 0; 
+                                    transform: translateY(-10px) scale(0.95); 
+                                }
+                                to { 
+                                    opacity: 1; 
+                                    transform: translateY(0) scale(1); 
+                                }
+                            }
+                            @keyframes glow {
+                                0%, 100% { 
+                                    box-shadow: 
+                                        0 20px 40px rgba(145, 70, 255, 0.3),
+                                        0 8px 16px rgba(0, 0, 0, 0.2),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                                }
+                                50% { 
+                                    box-shadow: 
+                                        0 25px 50px rgba(145, 70, 255, 0.4),
+                                        0 12px 24px rgba(0, 0, 0, 0.3),
+                                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+                                }
+                            }
+                            @keyframes float {
+                                0%, 100% { 
+                                    transform: translateY(0px) scale(1);
+                                    opacity: 0.6;
+                                }
+                                50% { 
+                                    transform: translateY(-10px) scale(1.2);
+                                    opacity: 1;
+                                }
                             }
                             .enhanced-ad-overlay .ad-notification {
-                                animation: slideInRight 0.5s ease-out forwards;
+                                animation: slideInRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                            }
+                            .enhanced-ad-overlay .ad-notification:hover {
+                                animation: glow 2s ease-in-out infinite;
                             }
                             .enhanced-ad-overlay.hide .ad-notification {
-                                animation: slideOutRight 0.3s ease-in forwards;
+                                animation: slideOutRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
                             }
                         `;
                         document.head.appendChild(style);
